@@ -9,6 +9,7 @@
 
 # But not these files...
 !.gitignore
+!resource/src/mediawiki.skinning/content.css
 # etc...
 
 # ...even if they are in subdirectories
