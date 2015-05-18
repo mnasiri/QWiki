@@ -23,8 +23,8 @@ li .mw-collapsible-toggle {
 
 @font-face {
 	font-family: 'KFGQPC_Naskh';
-	src: url('/resources/KFC_naskh.eot');
-	src: local('KFGQPC Uthman Taha Naskh'), url('/resources/KFC_naskh.otf') format('opentype');
+	src: url('/QWiki/resources/KFC_naskh.eot');
+	src: local('KFGQPC Uthman Taha Naskh'), url('/QWiki/resources/KFC_naskh.otf') format('opentype');
 }
 
 /* the added list item should have no list-style */

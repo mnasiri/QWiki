@@ -76,9 +76,9 @@ table.toc td {
 	padding: 0;
 	text-align: left;
 	font-size: 25px;
-	font-family: 'KFGQPC Uthman Taha Naskh', 'KFGQPC_Naskh'
+	font-family: 'KFGQPC Uthman Taha Naskh', 'KFGQPC_Naskh';
 }
- 
+
 #toc ul ul,
 .toc ul ul {
 	margin: 0 0 0 2em;
