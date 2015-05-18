@@ -570,7 +570,8 @@ class SkinTemplate extends Skin {
 			}else{
 				$href1 = $href2 ='P'.$odd_page_number.'-'.$even_page_number;
 			}
-
+				
+			//$imageTag2 = $imageTag1 = $GLOBALS['QOut']['quranpage'] ;
 			$imageTag1 = $wgOut->parse("[[File:Quran Page $odd_page_number.jpg|link=$href1]]");
 			$imageTag2 = $wgOut->parse("[[File:Quran Page $even_page_number.jpg|link=$href2]]");
 

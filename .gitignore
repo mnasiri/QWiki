@@ -8,7 +8,13 @@
 *
 
 # But not these files...
+# please put them alphabetically sorted
 !.gitignore
+!LocalSetting.php
+
+!extensions/QPage/
+
+!includes/skins/SkinTemplate.php
 
 !resources/src/mediawiki.skinning/content.css
 !resources/src/jquery/jquery.makeCollapsible.css
@@ -16,7 +22,6 @@
 !skins/Vector/components/common.less
 !skins/Vector/VectorTemplate.php
 
-!includes/skins/SkinTemplate.php
 # etc...
 
 # ...even if they are in subdirectories
