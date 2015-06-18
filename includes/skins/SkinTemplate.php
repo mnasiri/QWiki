@@ -59,7 +59,7 @@ class MediaWikiI18N {
  * Template-filler skin base class
  * Formerly generic PHPTal (http://phptal.sourceforge.net/) skin
  * Based on Brion's smarty skin
- * @copyright Copyright � Gabriel Wicke -- http://www.aulinx.de/
+ * @copyright Copyright © Gabriel Wicke -- http://www.aulinx.de/
  *
  * @todo Needs some serious refactoring into functions that correspond
  * to the computations individual esi snippets need. Most importantly no body
@@ -549,6 +549,8 @@ class SkinTemplate extends Skin {
 		$this->isquranic = $this->page_both || $this->normal_page;
 		$tpl->data['isquranic'] = $this->isquranic;
 		if ($this->isquranic){
+			
+			$tpl->set( 'title_by_language', 'صفحه'.substr($title, 1));
 			$this->page_number = (int) substr((string)$title,1,3);
 			$odd_page_number = $this->page_number % 2 == 1
 							 ? $this->page_number :$this->page_number-1;
@@ -562,25 +564,40 @@ class SkinTemplate extends Skin {
 				if($odd_page_number < 603){
 					$hrefNext = 'P'.($odd_page_number+2).'-'.($even_page_number+2);
 					$htmlNext = $wgOut->parse("[[File:Next.jpg|40px|left|link=$hrefNext]]");
+					$htmlNext .= $wgOut->parse("[[File:Down.jpg|40px|center|link=$href2]]");
+					$htmlNext = "<div class='floatleft' style='width: 49%'>$htmlNext</div>";
 				}
 				if($odd_page_number > 1){
 					$hrefPrev = 'P'.($odd_page_number-2).'-'.($even_page_number-2);
 					$htmlPrev = $wgOut->parse("[[File:Prev.jpg|40px|right|link=$hrefPrev]]");
+					$htmlPrev .= $wgOut->parse("[[File:Down.jpg|40px|center|link=$href1]]");
+					$htmlPrev = "<div class='floatright' style='width: 49%'>$htmlPrev</div>";
 				}
 			}else{
 				$href1 = $href2 ='P'.$odd_page_number.'-'.$even_page_number;
+				$htmlUp = $wgOut->parse("[[File:Up.jpg|40px|center|link=$href1]]");
+				$htmlUp = "<div class='floatright' style='width: 100%'>$htmlUp</div>";
 			}
-				
-			//$imageTag2 = $imageTag1 = $GLOBALS['QOut']['quranpage'] ;
-			$imageTag1 = $wgOut->parse("[[File:Quran Page $odd_page_number.jpg|link=$href1]]");
-			$imageTag2 = $wgOut->parse("[[File:Quran Page $even_page_number.jpg|link=$href2]]");
+			global $mediaWiki;
+			// $GLOBALS['mediaWiki']['quranpage']
 
+			if(property_exists($mediaWiki,'quranpage')){//$mediaWiki->quranpage !== null){
+				$imageTag1 = @$mediaWiki->quranpage[$odd_page_number];
+				$imageTag2 = @$mediaWiki->quranpage[$even_page_number]; 
+			}else{
+				$imageTag1 = $wgOut->parse("[[File:Quran Page $odd_page_number.jpg|link=$href1]]");
+				$imageTag2 = $wgOut->parse("[[File:Quran Page $even_page_number.jpg|link=$href2]]");
+			}
+ 
 			$tpl->data['quran_odd_page'] = "<div>$imageTag1</div>";
 			$tpl->data['quran_even_page'] = "<div>$imageTag2 </div>";
 			if($this->page_both){
-				$tpl->data['quran_prev_next'] = $htmlNext.$htmlPrev;
+				$tpl->data['quran_prev_next'] = "<div style='width: 100%;'>$htmlNext $htmlPrev</div>";
 				$tpl->set( 'quran_prev_next_top', $tpl->data['quran_prev_next']);
 				$tpl->set( 'quran_prev_next_bottom', $tpl->data['quran_prev_next']);
+			}else{
+				$tpl->data['quran_up_link'] = "<div style='width: 100%;'>$htmlUp</div>";
+				$tpl->set( 'quran_up', $tpl->data['quran_up_link']);
 			}
 
 			$tpl->data['quranPageNum'] = $this->page_number;
@@ -628,7 +645,7 @@ class SkinTemplate extends Skin {
 	 * Format language name for use in sidebar interlanguage links list.
 	 * By default it is capitalized.
 	 *
-	 * @param string $name Language name, e.g. "English" or "espa�ol"
+	 * @param string $name Language name, e.g. "English" or "español"
 	 * @return string
 	 * @private
 	 */

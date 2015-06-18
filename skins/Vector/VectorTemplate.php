@@ -35,6 +35,7 @@ class VectorTemplate extends BaseTemplate {
 	public function execute() {
 		// Build additional attributes for navigation urls
 		$nav = $this->data['content_navigation'];
+		$this->isquranic = $this->data['isquranic'];
 
 		if ( $this->config->get( 'VectorUseIconWatch' ) ) {
 			$mode = $this->getSkin()->getUser()->isWatched( $this->getSkin()->getRelevantTitle() )
@@ -50,6 +51,7 @@ class VectorTemplate extends BaseTemplate {
 		}
 
 		$xmlID = '';
+		
 		foreach ( $nav as $section => $links ) {
 			foreach ( $links as $key => $link ) {
 				if ( $section == 'views' && !( isset( $link['primary'] ) && $link['primary'] ) ) {
@@ -73,6 +75,7 @@ class VectorTemplate extends BaseTemplate {
 				}
 			}
 		}
+
 		$this->data['namespace_urls'] = $nav['namespaces'];
 		$this->data['view_urls'] = $nav['views'];
 		$this->data['action_urls'] = $nav['actions'];
@@ -102,26 +105,34 @@ class VectorTemplate extends BaseTemplate {
 			<?php
 			}
 			?>
-			<h1 id="firstHeading" class="firstHeading" lang="<?php
+			<!--QWiki-->
+			<h1 id="firstHeading" style ="text-align:right" class="firstHeading" lang="<?php
 			$this->data['pageLanguage'] =
 				$this->getSkin()->getTitle()->getPageViewLanguage()->getHtmlCode();
 			$this->text( 'pageLanguage' );
-			?>"><span dir="auto"><?php $this->html( 'title' ) ?></span></h1>
+			?>"><span dir="auto"><?php if($this->isquranic) $this->html( 'title_by_language' ); else $this->html('title'); ?></span></h1>
 			<?php $this->html( 'prebodyhtml' ) ?>
-			<div id="bodyContent" class="mw-body-content">
-			<!--QWiki-->
+			<div id="bodyContent" class="<?php if($this->isquranic) echo 'mw_quran_page';
+		?>  mw-body-content">
 				<?php
-				$this->isquranic = $this->data['isquranic'];
 				if($this->data['isquranic']){
 					$this->page_both = $this->data['doubleQuranPage'];
 					$this->page_number = $this->data['quranPageNum'];
-					if($this->page_both)
+					if($this->page_both){
 						$this->html( 'quran_prev_next_top' );
+					}else{
+						$this->html('quran_up');
+					}
+					echo "<div>";
 					if($this->page_both || $this->page_number%2 != 0){
 					?>
 						<div class="right-half-content">
-							<div class="float-left">
-								<?php $this->html( 'quranbodycontent1' ) ?>
+							<div class="mv-Quran-page-top">
+							</div>
+							<div class="mv-Quran-page-middle">							
+								<?php $this->html( 'quranbodycontent1' )?>
+							</div>
+							<div class="mv-Quran-page-bottom">
 							</div>
 						</div>
 					<?php
@@ -212,20 +223,55 @@ class VectorTemplate extends BaseTemplate {
 					if($this->page_both || $this->page_number%2 == 0){
 					?>
 						<div class="left-half-content">
-							<div class="float-right">
+							<div class="mv-Quran-page-top">
+							</div>
+							<div class="mv-Quran-page-middle">							
 								<?php $this->html( 'quranbodycontent2' )?>
 							</div>
-
+							<div class="mv-Quran-page-bottom">
+							</div>
 						</div>
 					<?php
 					}
-					if($this->page_both)
+					echo "</div>";
+					if($this->page_both){
 						$this->html( 'quran_prev_next_bottom' );
+					}
 				}
 				?>
 			<!--/QWiki-->
+			<?php if($this->isquranic && $this->page_both){
+				$this->html( 'bodycontent' ) ?>
+					<?php
+					if ( $this->data['printfooter'] ) {
+						?>
+						<div class="printfooter">
+							<?php $this->html( 'printfooter' ); ?>
+						</div>
+					<?php
+					}
+					?>
+					<?php
+					if ( $this->data['catlinks'] ) {
+						?>
+						<?php
+						$this->html( 'catlinks' );
+						?>
+					<?php
+					}
+					?>
+					<?php
+					if ( $this->data['dataAfterContent'] ) {
+						?>
+						<?php
+						$this->html( 'dataAfterContent' );
+						?>
+					<?php
+					}
+				}
+					?>
 			</div>
-		</div>
+		</div>	
 		<div id="mw-navigation">
 			<h2><?php $this->msg( 'navigation-heading' ) ?></h2>
 

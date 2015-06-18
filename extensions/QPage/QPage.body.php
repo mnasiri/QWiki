@@ -12,13 +12,19 @@ class QPage{
 		//foreach( $args as $name => $value )
 		//	$attr[] = '<strong>' . htmlspecialchars( $name ) . '</strong> = ' . htmlspecialchars( $value );
 		global $wgOut;
-		//$qpageNumber = $args['number'];
+		global $mediaWiki;
+		global $wgParser;
+		$wgParser->disableCache();
+		$qpageNumber = $args['number'];
 		//$GLOBALS['QOut']['quranpage'] = $wgOut->parse($input);
 		$str = $wgOut->parse($input);
 		$str = str_replace("<p>", "<p class='mw-Quran-line'>", $str);
 		$str = str_replace("<h3>", "<p class='mw-Quran-besm'>", $str);
+		$str = str_replace("<h4>", "<p class=' mw-surah-name mw-Quran-besm'>", $str);
 		$str = str_replace("</h3>", "</p>", $str);
-		return "$str";
+		$str = str_replace("</h4>", "</p>", $str);
+		$mediaWiki->quranpage[$qpageNumber] = "<div class='mv-Quran-text-panel'>$str</div>";
+		return " ";
 	 
 	/* The following lines can be used to get the variable values directly:
 	        $to = $args['to'] ;
