@@ -123,10 +123,10 @@ class VectorTemplate extends BaseTemplate {
 					}else{
 						$this->html('quran_up');
 					}
-					echo "<div>";
+					echo "<div class='floatright'>";
 					if($this->page_both || $this->page_number%2 != 0){
 					?>
-						<div class="right-half-content">
+						<div class="half-content" style="float: right;">
 							<div class="mv-Quran-page-top">
 							</div>
 							<div class="mv-Quran-page-middle">							
@@ -143,7 +143,7 @@ class VectorTemplate extends BaseTemplate {
 				if(!$this->data['isquranic'] || !$this->page_both){
 					if($this->data['isquranic']){
 						$side = $this->page_number%2 == 0 ? "right": "left";
-						echo "<div class=\"$side-half-content scrollable\">";
+						echo "<div class=\"half-content scrollable\" style='float: $side;'>";
 					}
 				?>
 			<!--/QWiki-->
@@ -222,7 +222,7 @@ class VectorTemplate extends BaseTemplate {
 
 					if($this->page_both || $this->page_number%2 == 0){
 					?>
-						<div class="left-half-content">
+						<div class="half-content" style="float: left;">
 							<div class="mv-Quran-page-top">
 							</div>
 							<div class="mv-Quran-page-middle">							

@@ -23,7 +23,7 @@ class QPage{
 		$str = str_replace("<h4>", "<p class=' mw-surah-name mw-Quran-besm'>", $str);
 		$str = str_replace("</h3>", "</p>", $str);
 		$str = str_replace("</h4>", "</p>", $str);
-		$mediaWiki->quranpage[$qpageNumber] = "<div class='mv-Quran-text-panel'>$str</div>";
+		$mediaWiki->quranpage[$qpageNumber] = "<div class='mv-Quran-text-panel' style = 'direction: rtl;'>$str</div>";
 		return " ";
 	 
 	/* The following lines can be used to get the variable values directly:

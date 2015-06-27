@@ -504,6 +504,7 @@ class SkinTemplate extends Skin {
 			$realBodyAttribs['lang'] = $pageLang->getHtmlCode();
 			$realBodyAttribs['dir'] = $pageLang->getDir();
 			$realBodyAttribs['class'] = 'mw-content-' . $pageLang->getDir();
+			$realBodyAttribs['style'] = 'margin: 10px';
 		}
 
 		$out->mBodytext = Html::rawElement( 'div', $realBodyAttribs, $out->mBodytext );
@@ -544,40 +545,69 @@ class SkinTemplate extends Skin {
 		// and output printfooter and debughtml separately
 		// <QWiki
 		global $wgOut;
-		$this->page_both = preg_match('/^P[0-9]{3,3}-[0-9]{3,3}$/', $title);
+		$this->page_both = preg_match('/^P([0-9]{3,3})-([0-9]{3,3})$/', $title,$matches);
+		if ($this->page_both) {
+			$odd = $matches[1];
+			$even = $matches[2];
+			if($odd % 2 != 1 || $even % 2 != 0 || $even - $odd != 1)
+				$this->page_both = false;
+		}
 		$this->normal_page = preg_match('/^P[0-9]{3,3}$/', $title);
 		$this->isquranic = $this->page_both || $this->normal_page;
 		$tpl->data['isquranic'] = $this->isquranic;
+		$hrefTOC = 'QuranTOC';
 		if ($this->isquranic){
 			
 			$tpl->set( 'title_by_language', 'صفحه'.substr($title, 1));
 			$this->page_number = (int) substr((string)$title,1,3);
+			$prev_page_Num = $this->page_number - 1;
+			$next_page_Num = $this->page_number + 1;
 			$odd_page_number = $this->page_number % 2 == 1
 							 ? $this->page_number :$this->page_number-1;
 			$even_page_number = $odd_page_number +1;
 
 			$hrefNext = $hrefPrev = "";
+			$hrefOdd = 'P'.str_pad($odd_page_number, 3, "0", STR_PAD_LEFT);
+			$hrefEven = 'P'.str_pad($even_page_number, 3, "0", STR_PAD_LEFT);
+			$hrefBoth = 'P'.str_pad($odd_page_number, 3, "0", STR_PAD_LEFT)
+						.'-'.str_pad($even_page_number, 3, "0", STR_PAD_LEFT);
+		
+			if($odd_page_number < 603)
+				if($this->page_both){
+					$hrefNext = 'P'.str_pad(($odd_page_number+2), 3, "0", STR_PAD_LEFT)
+								.'-'.str_pad(($even_page_number+2), 3, "0", STR_PAD_LEFT);
+				}else
+					$hrefNext = 'P'.str_pad(($this->page_number+1), 3, "0", STR_PAD_LEFT);
+
+			if($odd_page_number > 1)
+				if($this->page_both){
+					$hrefPrev = 'P'.str_pad(($odd_page_number-2), 3, "0", STR_PAD_LEFT)
+								.'-'.str_pad(($even_page_number-2), 3, "0", STR_PAD_LEFT);
+				}else
+					$hrefPrev = 'P'.str_pad(($this->page_number-1), 3, "0", STR_PAD_LEFT);
+
+			$htmlNext = $htmlPrev = $htmlUp = "";
+			if($hrefNext != "")
+				$htmlNext = $wgOut->parse("[[File:Next.jpg|40px|left|link=$hrefNext]]");
+			if($this->page_both)
+					$htmlNext .= $wgOut->parse(
+						"[[File:leftPageDetail.png|40px|center|link=$hrefEven]]");
+			$htmlNext = "<div class='floatleft' style='width: 36%'>$htmlNext</div>";
+
+			if($hrefPrev != "")
+				$htmlPrev = $wgOut->parse("[[File:Prev.jpg|40px|right|link=$hrefPrev]]");
+			if($this->page_both)
+				$htmlPrev .= $wgOut->parse(
+					"[[File:rightPageDetail.png|40px|center|link=$hrefOdd]]");
+			$htmlPrev = "<div class='floatright' style='width: 36%'>$htmlPrev</div>";				
+			
 			if($this->page_both){
-				$href1 = 'P'.$odd_page_number;
-				$href2 = 'P'.$even_page_number;
-				$htmlNext = $htmlPrev = "";
-				if($odd_page_number < 603){
-					$hrefNext = 'P'.($odd_page_number+2).'-'.($even_page_number+2);
-					$htmlNext = $wgOut->parse("[[File:Next.jpg|40px|left|link=$hrefNext]]");
-					$htmlNext .= $wgOut->parse("[[File:Down.jpg|40px|center|link=$href2]]");
-					$htmlNext = "<div class='floatleft' style='width: 49%'>$htmlNext</div>";
-				}
-				if($odd_page_number > 1){
-					$hrefPrev = 'P'.($odd_page_number-2).'-'.($even_page_number-2);
-					$htmlPrev = $wgOut->parse("[[File:Prev.jpg|40px|right|link=$hrefPrev]]");
-					$htmlPrev .= $wgOut->parse("[[File:Down.jpg|40px|center|link=$href1]]");
-					$htmlPrev = "<div class='floatright' style='width: 49%'>$htmlPrev</div>";
-				}
+				$htmlUp = $wgOut->parse("[[File:list.png|40px|center|link=$hrefTOC]]");
 			}else{
-				$href1 = $href2 ='P'.$odd_page_number.'-'.$even_page_number;
-				$htmlUp = $wgOut->parse("[[File:Up.jpg|40px|center|link=$href1]]");
-				$htmlUp = "<div class='floatright' style='width: 100%'>$htmlUp</div>";
+				$htmlUp = $wgOut->parse("[[File:twopageView.png|40px|center|link=$hrefBoth]]");
 			}
+			$htmlUp = "<div class='floatleft' style='width: 24%; clear:none;'>$htmlUp</div>";
+
 			global $mediaWiki;
 			// $GLOBALS['mediaWiki']['quranpage']
 
@@ -585,18 +615,21 @@ class SkinTemplate extends Skin {
 				$imageTag1 = @$mediaWiki->quranpage[$odd_page_number];
 				$imageTag2 = @$mediaWiki->quranpage[$even_page_number]; 
 			}else{
-				$imageTag1 = $wgOut->parse("[[File:Quran Page $odd_page_number.jpg|link=$href1]]");
-				$imageTag2 = $wgOut->parse("[[File:Quran Page $even_page_number.jpg|link=$href2]]");
+				$imageTag1 = $imageTag2 = 
+					$wgOut->parse(
+						"[[File:list.png|40px|center|link=$hrefTOC]]"
+						."[[File:book404.png|400px|center|link=]]"
+					);
 			}
  
 			$tpl->data['quran_odd_page'] = "<div>$imageTag1</div>";
 			$tpl->data['quran_even_page'] = "<div>$imageTag2 </div>";
 			if($this->page_both){
-				$tpl->data['quran_prev_next'] = "<div style='width: 100%;'>$htmlNext $htmlPrev</div>";
+				$tpl->data['quran_prev_next'] = "<div style='width: 100%; float:right;'>$htmlNext $htmlUp $htmlPrev</div>";
 				$tpl->set( 'quran_prev_next_top', $tpl->data['quran_prev_next']);
 				$tpl->set( 'quran_prev_next_bottom', $tpl->data['quran_prev_next']);
 			}else{
-				$tpl->data['quran_up_link'] = "<div style='width: 100%;'>$htmlUp</div>";
+				$tpl->data['quran_up_link'] = "<div style='width: 100%;'>$htmlNext $htmlUp $htmlPrev</div>";
 				$tpl->set( 'quran_up', $tpl->data['quran_up_link']);
 			}
 
