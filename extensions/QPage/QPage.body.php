@@ -18,11 +18,12 @@ class QPage{
 		$qpageNumber = $args['number'];
 		//$GLOBALS['QOut']['quranpage'] = $wgOut->parse($input);
 		$str = $wgOut->parse($input);
-		$str = str_replace("<p>", "<p class='mw-Quran-line'>", $str);
-		$str = str_replace("<h3>", "<p class='mw-Quran-besm'>", $str);
-		$str = str_replace("<h4>", "<p class=' mw-surah-name mw-Quran-besm'>", $str);
-		$str = str_replace("</h3>", "</p>", $str);
-		$str = str_replace("</h4>", "</p>", $str);
+		$str = str_replace("<p>", "<div class='mw-Quran-line mw-Quran-common'>", $str);
+		$str = str_replace("<h3>", "<div class='mw-Quran-besm mw-Quran-common'>", $str);
+		$str = str_replace("<h4>", "<div class='mw-surah-name mw-Quran-besm mw-Quran-common'>", $str);
+		$str = str_replace("</h3>", "</div>", $str);
+		$str = str_replace("</h4>", "</div>", $str);
+		$str = str_replace("</p>", "</div>", $str);
 		$mediaWiki->quranpage[$qpageNumber] = "<div class='mv-Quran-text-panel' style = 'direction: rtl;'>$str</div>";
 		return " ";
 	 
